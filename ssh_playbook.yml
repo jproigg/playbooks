@@ -1,0 +1,36 @@
+---
+- name: Copy SSH public key to remote hosts
+  hosts: "{{ ssh_hosts }}"
+  become: yes
+
+  tasks:
+    - name: Create SSH directory
+      file:
+        path: "{{ ansible_env.HOME }}/.ssh"
+        state: directory
+        mode: '0700'
+
+    - name: Copy SSH public key
+      authorized_key:
+        user: "{{ ansible_user }}"
+        key: "{{ lookup('file', public_key_path) }}"
+        state: present
+
+    - name: Set proper permissions on the authorized_keys file
+      file:
+        path: "{{ ansible_env.HOME }}/.ssh/authorized_keys"
+        mode: '0600'
+
+    - name: Ensure SSH key authentication is allowed
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PasswordAuthentication'
+        line: 'PasswordAuthentication no'
+      notify:
+        - restart ssh
+
+  handlers:
+    - name: restart ssh
+      service:
+        name: sshd
+        state: restarted

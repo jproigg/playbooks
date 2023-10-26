@@ -9,3 +9,16 @@ share_paths:
   nfs: /mnt/nfs
   cifs: /mnt/cifs
   iscsi: /mnt/iscsi
+
+# SSH public key file path on the control machine
+public_key_path: /home/ansible/.ssh/id_rsa.pub
+
+# User to connect to the remote hosts
+ansible_user: ansible
+
+# List of remote hosts in your inventory
+ssh_hosts:
+  - 10.0.0.2
+  - 10.0.0.3
+  - 10.0.0.5
+  # Add more hosts as needed
